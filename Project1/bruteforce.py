@@ -8,7 +8,7 @@ from itertools import *
 def main(argv):
     start = time.time()
     cities = []
-    output = []
+    output = {"path":{}, "distance":0}
     num = 0
 
     with open(argv[1]) as f:
@@ -21,7 +21,7 @@ def main(argv):
 
     first = cities.pop(0)
     num -= 1
-    for p in permutations(cities):
+    for p in permutations(cities):      # OUTPUT SHOULD BE 106.7858 FOR 10 CITIES
         count = 0
         distance = 0
         while count < num:
@@ -30,7 +30,10 @@ def main(argv):
                 distance += math.sqrt(pow(float(first['x']) - float(p[count]['x']), 2) + pow(float(first['y']) - float(p[count]['y']), 2))
             else:
                 distance += math.sqrt(pow(float(p[count-1]['x']) - float(p[count]['x']), 2) + pow(float(p[count-1]['y']) - float(p[count]['y']), 2))
-            output.append({"path":list(p).insert(0,first), "distance":distance}) # not working
+            if(output['distance'] < distance):
+                path = list(p)
+                path.insert(0,first)
+                output = {"path":path, "distance":distance} # not working
             count += 1
     print(output)
 
