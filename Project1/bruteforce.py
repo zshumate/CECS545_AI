@@ -21,13 +21,12 @@ def main(argv):
 
     first = cities.pop(0)
     num -= 1
-    for p in permutations(cities):      # OUTPUT SHOULD BE 106.7858 FOR 10 CITIES
+    for p in permutations(cities):
         count = 0
         distance = 0
         while count <= num:
-            # fix this if statment to properly finish the cycle
             if(count == 0):
-                distance += math.sqrt(pow(float(first['x']) - float(p[count-1]['x']), 2) + pow(float(first['y']) - float(p[count-1]['y']), 2))
+                distance += math.sqrt(pow(float(first['x']) - float(p[count]['x']), 2) + pow(float(first['y']) - float(p[count]['y']), 2))
             elif(count == num):
                 distance += math.sqrt(pow(float(first['x']) - float(p[count-1]['x']), 2) + pow(float(first['y']) - float(p[count-1]['y']), 2))
             else:
