@@ -8,7 +8,7 @@ from itertools import *
 def main(argv):
     start = time.time()
     cities = []
-    output = {"path":{}, "distance":0}
+    output = {"path":{}, "distance":99999999999999}
     num = 0
 
     with open(argv[1]) as f:
@@ -24,17 +24,19 @@ def main(argv):
     for p in permutations(cities):      # OUTPUT SHOULD BE 106.7858 FOR 10 CITIES
         count = 0
         distance = 0
-        while count < num:
+        while count <= num:
             # fix this if statment to properly finish the cycle
             if(count == 0):
-                distance += math.sqrt(pow(float(first['x']) - float(p[count]['x']), 2) + pow(float(first['y']) - float(p[count]['y']), 2))
+                distance += math.sqrt(pow(float(first['x']) - float(p[count-1]['x']), 2) + pow(float(first['y']) - float(p[count-1]['y']), 2))
+            elif(count == num):
+                distance += math.sqrt(pow(float(first['x']) - float(p[count-1]['x']), 2) + pow(float(first['y']) - float(p[count-1]['y']), 2))
             else:
                 distance += math.sqrt(pow(float(p[count-1]['x']) - float(p[count]['x']), 2) + pow(float(p[count-1]['y']) - float(p[count]['y']), 2))
-            if(output['distance'] < distance):
-                path = list(p)
-                path.insert(0,first)
-                output = {"path":path, "distance":distance} # not working
             count += 1
+        if(min(output['distance'], distance) == distance):
+            path = list(p)
+            path.insert(0,first)
+            output = {"path":path, "distance":distance}
     print(output)
 
     print '\nThis script took ', time.time()-start, ' seconds.'
