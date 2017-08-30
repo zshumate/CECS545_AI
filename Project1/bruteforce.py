@@ -8,12 +8,14 @@ import sys
 import time
 import math
 from itertools import *
+import matplotlib.pyplot as plt
 
 def main(argv):
     start = time.time()
     cities = []
     output = {"path":{}, "distance":99999999999999}
     num = 0
+    x, y = [], []
 
     # read cities from file given as a argument into a list of dictionaries
     with open(argv[1]) as f:
@@ -45,7 +47,16 @@ def main(argv):
             path = list(p)
             path.insert(0,first)
             output = {"path":path, "distance":distance}
+
     print(output)
+
+    for c in output["path"]:
+        x.append(c["x"])
+        y.append(c["y"])
+    x.append(output["path"][0]["x"])
+    y.append(output["path"][0]["y"])
+    plt.plot(x,y)
+    plt.show()
 
     print '\nThis script took ', time.time()-start, ' seconds.'
 
