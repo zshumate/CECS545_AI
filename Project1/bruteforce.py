@@ -48,8 +48,13 @@ def main(argv):
             path.insert(0,first)
             output = {"path":path, "distance":distance}
 
+    # print outout
     print(output)
 
+    # print time for script to run
+    print '\nThis script took ', time.time()-start, ' seconds.'
+
+    # graph output
     for c in output["path"]:
         x.append(c["x"])
         y.append(c["y"])
@@ -57,8 +62,6 @@ def main(argv):
     y.append(output["path"][0]["y"])
     plt.plot(x,y)
     plt.show()
-
-    print '\nThis script took ', time.time()-start, ' seconds.'
 
 if __name__ == "__main__":
     main(sys.argv)
