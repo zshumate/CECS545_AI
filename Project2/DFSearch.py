@@ -10,12 +10,15 @@ import math
 from itertools import *
 import matplotlib.pyplot as plt
 
-def depthSearch(city):
-    if not city['next']:
-        for c in cityList:
-            nextCity = c['next']
-            for n in c['next']:
-                    cities[n-1]['prev'] = c['num']
+# need to pass distances for comparison
+def depthSearch(cityList, city, distance, prev):
+    if 'distance' not in city or distance < city['distance']:
+        city['distance'] = distance
+        city['prev'] = prev
+    if city['next']:
+        for n in city['next']:
+            nextDistance = distance + math.sqrt(pow(float(city['x']) - float(cityList[n-1]['x']), 2) + pow(float(city['y']) - float(cityList[n-1]['y']), 2))
+            depthSearch(cityList, cityList[n-1], nextDistance, city['num'])
 
 def main(argv):
     start = time.time()
@@ -38,7 +41,6 @@ def main(argv):
     for c in cities:
         if c['num'] == '1':
             c['next'] = [2,3,4]
-            c['prev'] = '0'
         if c['num'] == '2':
             c['next'] = [3]
         if c['num'] == '3':
@@ -59,20 +61,14 @@ def main(argv):
             c['next'] = [11]
         if c['num'] == '11':
             c['next'] = []
-            
-    # finds the shortest path via depth first search
-    # for c in cities:
-    #     nextCity = c['next']
-    #     for n in c['next']:
-    #             cities[n-1]['prev'] = c['num']
 
-    sys.exit() # temp
+    # finds the shortest path via depth first search
+    depthSearch(cities,cities[0], 0, '0')
 
     # retrace recorded path and put into output
+    output['distance'] = cities[count]
     while count != -1:
         output['path'].insert(0,cities[count])
-        if count != 1:
-            output['distance'] += math.sqrt(pow(float(cities[count]['x']) - float(cities[int(cities[count]['prev'])]['x']), 2) + pow(float(cities[count]['y']) - float(cities[int(cities[count]['prev'])]['y']), 2))
         count = int(cities[count]['prev']) - 1
 
     # print outout
