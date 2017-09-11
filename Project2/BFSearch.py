@@ -62,36 +62,12 @@ def main(argv):
                 cities[n-1]['prev'] = c['num']
                 cities[n-1]['transitions'] = c['transitions'] + 1
 
+    # retrace recorded path and put into output
     while count != -1:
         output['path'].insert(0,cities[count])
         if count != 1:
             output['distance'] += math.sqrt(pow(float(cities[count]['x']) - float(cities[int(cities[count]['prev'])]['x']), 2) + pow(float(cities[count]['y']) - float(cities[int(cities[count]['prev'])]['y']), 2))
         count = int(cities[count]['prev']) - 1
-    print output
-
-    sys.exit() # temp, for testing
-
-    # remove starting ciri from list to cut down on the permutations need to generate
-    # first = cities.pop(0)
-    # num -= 1
-    # generate and loop through each permutation
-    # for p in permutations(cities):
-    #     count = 0
-    #     distance = 0
-    #     # calculate the distance between two cities and add to total distance
-    #     while count <= num:
-    #         if(count == 0):
-    #             distance += math.sqrt(pow(float(first['x']) - float(p[count]['x']), 2) + pow(float(first['y']) - float(p[count]['y']), 2))
-    #         elif(count == num):
-    #             distance += math.sqrt(pow(float(first['x']) - float(p[count-1]['x']), 2) + pow(float(first['y']) - float(p[count-1]['y']), 2))
-    #         else:
-    #             distance += math.sqrt(pow(float(p[count-1]['x']) - float(p[count]['x']), 2) + pow(float(p[count-1]['y']) - float(p[count]['y']), 2))
-    #         count += 1
-    #     # overwrite the output if new cycle has shorter distance
-    #     if(min(output['distance'], distance) == distance):
-    #         path = list(p)
-    #         path.insert(0,first)
-    #         output = {'path':path, 'distance':distance}
 
     # print outout
     print(output)
