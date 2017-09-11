@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 def main(argv):
     start = time.time()
     cities = []
-    output = {'path':[], 'distance':0}
+    output = {'path':[], 'transitions':0}
     num = 0
     x, y = [], []
     count = 10
@@ -63,10 +63,9 @@ def main(argv):
                 cities[n-1]['transitions'] = c['transitions'] + 1
 
     # retrace recorded path and put into output
+    output['transitions'] = cities[count]['transitions']
     while count != -1:
         output['path'].insert(0,cities[count])
-        if count != 1:
-            output['distance'] += math.sqrt(pow(float(cities[count]['x']) - float(cities[int(cities[count]['prev'])]['x']), 2) + pow(float(cities[count]['y']) - float(cities[int(cities[count]['prev'])]['y']), 2))
         count = int(cities[count]['prev']) - 1
 
     # print outout
