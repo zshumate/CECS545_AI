@@ -66,7 +66,7 @@ def main(argv):
     depthSearch(cities,cities[0], 0, '0')
 
     # retrace recorded path and put into output
-    output['distance'] = cities[count]
+    output['distance'] = cities[count]['distance']
     while count != -1:
         output['path'].insert(0,cities[count])
         count = int(cities[count]['prev']) - 1
