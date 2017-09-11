@@ -13,10 +13,10 @@ import matplotlib.pyplot as plt
 def main(argv):
     start = time.time()
     cities = []
-    output = {'path':{}, 'distance':99999999999999}
+    output = {'path':[], 'distance':0}
     num = 0
     x, y = [], []
-    count = 11
+    count = 10
 
     # read cities from file given as a argument into a list of dictionaries
     with open(argv[1]) as f:
@@ -31,6 +31,7 @@ def main(argv):
     for c in cities:
         if c['num'] == '1':
             c['next'] = [2,3,4]
+            c['prev'] = '0'
             c['transitions'] = 0
         if c['num'] == '2':
             c['next'] = [3]
@@ -61,8 +62,12 @@ def main(argv):
                 cities[n-1]['prev'] = c['num']
                 cities[n-1]['transitions'] = c['transitions'] + 1
 
-    
-    # print output
+    while count != -1:
+        output['path'].insert(0,cities[count])
+        if count != 1:
+            output['distance'] += math.sqrt(pow(float(cities[count]['x']) - float(cities[int(cities[count]['prev'])]['x']), 2) + pow(float(cities[count]['y']) - float(cities[int(cities[count]['prev'])]['y']), 2))
+        count = int(cities[count]['prev']) - 1
+    print output
 
     sys.exit() # temp, for testing
 
