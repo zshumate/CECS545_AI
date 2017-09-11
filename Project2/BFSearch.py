@@ -54,7 +54,7 @@ def main(argv):
         if c['num'] == '11':
             c['next'] = []
 
-    # finds the shortest path in terms of shortest number of transitions
+    # finds the shortest path in terms of shortest number of transitions via breadth first search
     for c in cities:
         nextCity = c['next']
         for n in c['next']:
