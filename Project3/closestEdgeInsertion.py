@@ -12,13 +12,24 @@ from sympy import Point
 from sympy.geometry import Segment
 import matplotlib.pyplot as plt
 
+def graph(output):
+    x, y = [], []
+    for c in output:
+        x.append(c["x"])
+        y.append(c["y"])
+    # x.append(output[0]["x"])
+    # y.append(output[0]["y"])
+    plt.plot(x,y)
+    # plt.pause(.5)
+    plt.show()
+
 def main(argv):
     start = time.time()
     cities = []
-    output = {"path":{}, "distance":99999999999999}
+    output = {"path":[], "distance":99999999999999}
     num = 0
-    x, y = [], []
     edges = []
+    # plt.ion()
 
     # read cities from file given as a argument into a list of dictionaries
     with open(argv[1]) as f:
@@ -45,8 +56,10 @@ def main(argv):
             count += 1
         edges.insert(n,{'edge':Segment((c['x'],c['y']),(cities[int(edges[n]['from'])-1]['x'],cities[int(edges[n]['from'])-1]['y'])), 'from':edges[n]['from'], 'to':c['num']})
         edges[n+1] = {'edge':Segment((c['x'],c['y']),(cities[int(edges[n]['to'])-1]['x'],cities[int(edges[n+1]['to'])-1]['y'])), 'from':c['num'], 'to':edges[n+1]['to']}
-
-    print edges
+        output['path'].append(cities[0])
+        for e in edges:
+            output['path'].append(cities[int(e['to'])-1])
+    graph(output['path'])
 
     sys.exit()
 
@@ -79,13 +92,14 @@ def main(argv):
     print '\nThis script took ', time.time()-start, ' seconds.'
 
     # graph output
-    for c in output["path"]:
-        x.append(c["x"])
-        y.append(c["y"])
-    x.append(output["path"][0]["x"])
-    y.append(output["path"][0]["y"])
-    plt.plot(x,y)
-    plt.show()
+    graph(output["path"])
+    # for c in output["path"]:
+    #     x.append(c["x"])
+    #     y.append(c["y"])
+    # x.append(output["path"][0]["x"])
+    # y.append(output["path"][0]["y"])
+    # plt.plot(x,y)
+    # plt.show()
 
 if __name__ == "__main__":
     main(sys.argv)
