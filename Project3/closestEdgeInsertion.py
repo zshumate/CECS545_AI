@@ -12,16 +12,23 @@ from sympy import Point
 from sympy.geometry import Segment
 import matplotlib.pyplot as plt
 
-def graph(output):
+def graph(output, cities):
     x, y = [], []
     for c in output:
         x.append(c["x"])
         y.append(c["y"])
     # x.append(output[0]["x"])
     # y.append(output[0]["y"])
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111)
+    # for c in cities:
+    #     ax.annotate('%s' % c['num'], xy=(c['x'], c['y']), textcoords='data')
     plt.plot(x,y)
     plt.pause(.5)
     # plt.show()
+
+def getDistance(x1, y1, x2, y2):
+    return math.sqrt(pow(float(x1) - float(x2), 2) + pow(float(y1) - float(y2), 2))
 
 def main(argv):
     start = time.time()
@@ -40,9 +47,12 @@ def main(argv):
             cities.append({"num":words[0],"x":words[1],"y":words[2].strip()})
             num += 1
 
-    edges.append({'edge':Segment((cities[0]['x'],cities[0]['y']),(cities[1]['x'],cities[1]['y'])), 'from':cities[0]['num'], 'to':cities[1]['num']})
-    edges.append({'edge':Segment((cities[1]['x'],cities[1]['y']),(cities[2]['x'],cities[2]['y'])), 'from':cities[1]['num'], 'to':cities[2]['num']})
-    edges.append({'edge':Segment((cities[2]['x'],cities[2]['y']),(cities[0]['x'],cities[0]['y'])), 'from':cities[2]['num'], 'to':cities[0]['num']})
+    # edges.append({'edge':Segment((cities[0]['x'],cities[0]['y']),(cities[1]['x'],cities[1]['y'])), 'from':cities[0]['num'], 'to':cities[1]['num']})
+    # edges.append({'edge':Segment((cities[1]['x'],cities[1]['y']),(cities[2]['x'],cities[2]['y'])), 'from':cities[1]['num'], 'to':cities[2]['num']})
+    # edges.append({'edge':Segment((cities[2]['x'],cities[2]['y']),(cities[0]['x'],cities[0]['y'])), 'from':cities[2]['num'], 'to':cities[0]['num']})
+    edges.append({'xFrom':cities[0]['x'], 'yFrom':cities[0]['y'], 'xTo':cities[1]['x'], 'yTo':cities[1]['y'], 'from':cities[0]['num'], 'to':cities[1]['num']})
+    edges.append({'xFrom':cities[1]['x'], 'yFrom':cities[1]['y'], 'xTo':cities[2]['x'], 'yTo':cities[2]['y'], 'from':cities[1]['num'], 'to':cities[2]['num']})
+    edges.append({'xFrom':cities[2]['x'], 'yFrom':cities[2]['y'], 'xTo':cities[0]['x'], 'yTo':cities[0]['y'], 'from':cities[2]['num'], 'to':cities[0]['num']})
 
     for c in cities[3:]:
         output['path'] = []
@@ -50,18 +60,21 @@ def main(argv):
         distance = 999999999
         n = 0
         for e in edges:
-            d = e['edge'].distance((c['x'],c['y']))
+            # d = e['edge'].distance((c['x'],c['y']))
+            d = getDistance(c['x'], c['y'], e['xFrom'], e['yFrom']) + getDistance(c['x'], c['y'], e['xTo'], e['yTo']) - getDistance(e['xFrom'], e['yFrom'], e['xTo'], e['yTo'])
             if d < distance:
                 distance = d
                 n = count
             count += 1
-        edges.insert(n,{'edge':Segment((c['x'],c['y']),(cities[int(edges[n]['from'])-1]['x'],cities[int(edges[n]['from'])-1]['y'])), 'from':edges[n]['from'], 'to':c['num']})
-        edges[n+1] = {'edge':Segment((c['x'],c['y']),(cities[int(edges[n]['to'])-1]['x'],cities[int(edges[n+1]['to'])-1]['y'])), 'from':c['num'], 'to':edges[n+1]['to']}
+        # edges.insert(n,{'edge':Segment((c['x'],c['y']),(cities[int(edges[n]['from'])-1]['x'],cities[int(edges[n]['from'])-1]['y'])), 'from':edges[n]['from'], 'to':c['num']})
+        # edges[n+1] = {'edge':Segment((c['x'],c['y']),(cities[int(edges[n]['to'])-1]['x'],cities[int(edges[n+1]['to'])-1]['y'])), 'from':c['num'], 'to':edges[n+1]['to']}
+        edges.insert(n,{'xFrom':edges[n]['xFrom'], 'yFrom':edges[n]['yFrom'], 'xTo':c['x'], 'yTo':c['y'], 'from':edges[n]['from'], 'to':c['num']})
+        edges[n+1] = {'xFrom':c['x'], 'yFrom':c['y'], 'xTo':edges[n+1]['xTo'], 'yTo':edges[n+1]['yTo'], 'from':c['num'], 'to':edges[n+1]['to']}
         output['path'].append(cities[0])
         for e in edges:
             output['path'].append(cities[int(e['to'])-1])
             plt.clf()
-        graph(output['path'])
+        graph(output['path'], cities)
 
     sys.exit()
 
