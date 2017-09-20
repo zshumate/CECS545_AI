@@ -20,8 +20,8 @@ def graph(output):
     # x.append(output[0]["x"])
     # y.append(output[0]["y"])
     plt.plot(x,y)
-    # plt.pause(.5)
-    plt.show()
+    plt.pause(.5)
+    # plt.show()
 
 def main(argv):
     start = time.time()
@@ -29,7 +29,7 @@ def main(argv):
     output = {"path":[], "distance":99999999999999}
     num = 0
     edges = []
-    # plt.ion()
+    plt.ion()
 
     # read cities from file given as a argument into a list of dictionaries
     with open(argv[1]) as f:
@@ -45,6 +45,7 @@ def main(argv):
     edges.append({'edge':Segment((cities[2]['x'],cities[2]['y']),(cities[0]['x'],cities[0]['y'])), 'from':cities[2]['num'], 'to':cities[0]['num']})
 
     for c in cities[3:]:
+        output['path'] = []
         count = 0
         distance = 999999999
         n = 0
@@ -59,7 +60,8 @@ def main(argv):
         output['path'].append(cities[0])
         for e in edges:
             output['path'].append(cities[int(e['to'])-1])
-    graph(output['path'])
+            plt.clf()
+        graph(output['path'])
 
     sys.exit()
 
