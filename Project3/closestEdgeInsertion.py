@@ -7,33 +7,25 @@
 import sys
 import time
 import math
-import sympy
-from sympy import Point
-from sympy.geometry import Segment
 import matplotlib.pyplot as plt
 
+# Graph each iteration
 def graph(output, cities):
     x, y = [], []
     for c in output:
         x.append(c["x"])
         y.append(c["y"])
-    # x.append(output[0]["x"])
-    # y.append(output[0]["y"])
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111)
-    # for c in cities:
-    #     ax.annotate('%s' % c['num'], xy=(c['x'], c['y']), textcoords='data')
     plt.plot(x,y)
     plt.pause(.5)
-    # plt.show()
 
+# Find the distance between two points
 def getDistance(x1, y1, x2, y2):
     return math.sqrt(pow(float(x1) - float(x2), 2) + pow(float(y1) - float(y2), 2))
 
 def main(argv):
     start = time.time()
     cities = []
-    output = {"path":[], "distance":99999999999999}
+    output = {"path":[], "distance":0}
     num = 0
     edges = []
     plt.ion()
@@ -47,74 +39,48 @@ def main(argv):
             cities.append({"num":words[0],"x":words[1],"y":words[2].strip()})
             num += 1
 
-    # edges.append({'edge':Segment((cities[0]['x'],cities[0]['y']),(cities[1]['x'],cities[1]['y'])), 'from':cities[0]['num'], 'to':cities[1]['num']})
-    # edges.append({'edge':Segment((cities[1]['x'],cities[1]['y']),(cities[2]['x'],cities[2]['y'])), 'from':cities[1]['num'], 'to':cities[2]['num']})
-    # edges.append({'edge':Segment((cities[2]['x'],cities[2]['y']),(cities[0]['x'],cities[0]['y'])), 'from':cities[2]['num'], 'to':cities[0]['num']})
+    # start with three cities, since it is trivial
     edges.append({'xFrom':cities[0]['x'], 'yFrom':cities[0]['y'], 'xTo':cities[1]['x'], 'yTo':cities[1]['y'], 'from':cities[0]['num'], 'to':cities[1]['num']})
     edges.append({'xFrom':cities[1]['x'], 'yFrom':cities[1]['y'], 'xTo':cities[2]['x'], 'yTo':cities[2]['y'], 'from':cities[1]['num'], 'to':cities[2]['num']})
     edges.append({'xFrom':cities[2]['x'], 'yFrom':cities[2]['y'], 'xTo':cities[0]['x'], 'yTo':cities[0]['y'], 'from':cities[2]['num'], 'to':cities[0]['num']})
 
+    # iterate through the remaining cities
     for c in cities[3:]:
         output['path'] = []
         count = 0
         distance = 999999999
         n = 0
+        # find the closest edge
         for e in edges:
-            # d = e['edge'].distance((c['x'],c['y']))
             d = getDistance(c['x'], c['y'], e['xFrom'], e['yFrom']) + getDistance(c['x'], c['y'], e['xTo'], e['yTo']) - getDistance(e['xFrom'], e['yFrom'], e['xTo'], e['yTo'])
             if d < distance:
                 distance = d
                 n = count
             count += 1
-        # edges.insert(n,{'edge':Segment((c['x'],c['y']),(cities[int(edges[n]['from'])-1]['x'],cities[int(edges[n]['from'])-1]['y'])), 'from':edges[n]['from'], 'to':c['num']})
-        # edges[n+1] = {'edge':Segment((c['x'],c['y']),(cities[int(edges[n]['to'])-1]['x'],cities[int(edges[n+1]['to'])-1]['y'])), 'from':c['num'], 'to':edges[n+1]['to']}
+        # replace the closest edge with two new edges
         edges.insert(n,{'xFrom':edges[n]['xFrom'], 'yFrom':edges[n]['yFrom'], 'xTo':c['x'], 'yTo':c['y'], 'from':edges[n]['from'], 'to':c['num']})
         edges[n+1] = {'xFrom':c['x'], 'yFrom':c['y'], 'xTo':edges[n+1]['xTo'], 'yTo':edges[n+1]['yTo'], 'from':c['num'], 'to':edges[n+1]['to']}
         output['path'].append(cities[0])
         for e in edges:
             output['path'].append(cities[int(e['to'])-1])
-            plt.clf()
+        plt.clf()
+        # fig = plt.figure()                    # This has been commented out to reduce memory usage if you run this
+        # ax = fig.add_subplot(111)             # This code provides the annotations for the city numbers
+        # for c in cities:
+        #     ax.annotate('%s' % c['num'], xy=(c['x'], c['y']), textcoords='data')
         graph(output['path'], cities)
+    time.sleep(2)
 
-    sys.exit()
-
-    # # remove starting ciri from list to cut down on the permutations need to generate
-    # first = cities.pop(0)
-    # num -= 1
-    # # generate and loop through each permutation
-    # for p in permutations(cities):
-    #     count = 0
-    #     distance = 0
-    #     # calculate the distance between two cities and add to total distance
-    #     while count <= num:
-    #         if(count == 0):
-    #             distance += math.sqrt(pow(float(first['x']) - float(p[count]['x']), 2) + pow(float(first['y']) - float(p[count]['y']), 2))
-    #         elif(count == num):
-    #             distance += math.sqrt(pow(float(first['x']) - float(p[count-1]['x']), 2) + pow(float(first['y']) - float(p[count-1]['y']), 2))
-    #         else:
-    #             distance += math.sqrt(pow(float(p[count-1]['x']) - float(p[count]['x']), 2) + pow(float(p[count-1]['y']) - float(p[count]['y']), 2))
-    #         count += 1
-    #     # overwrite the output if new cycle has shorter distance
-    #     if(min(output['distance'], distance) == distance):
-    #         path = list(p)
-    #         path.insert(0,first)
-    #         output = {"path":path, "distance":distance}
+    count = 0
+    while count < len(output['path'])-1:
+        output['distance'] += getDistance(output['path'][count]['x'], output['path'][count]['y'], output['path'][count+1]['x'], output['path'][count+1]['y'])
+        count += 1
 
     # print outout
     print(output)
 
     # print time for script to run
     print '\nThis script took ', time.time()-start, ' seconds.'
-
-    # graph output
-    graph(output["path"])
-    # for c in output["path"]:
-    #     x.append(c["x"])
-    #     y.append(c["y"])
-    # x.append(output["path"][0]["x"])
-    # y.append(output["path"][0]["y"])
-    # plt.plot(x,y)
-    # plt.show()
 
 if __name__ == "__main__":
     main(sys.argv)
