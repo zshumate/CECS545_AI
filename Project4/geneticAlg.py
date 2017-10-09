@@ -124,28 +124,22 @@ def main(argv):
    genome.crossover.set(Crossovers.G1DListCrossoverEdge)
    genome.initializator.set(G1DListTSPInitializator)
 
-   # 3662.69
    ga = GSimpleGA.GSimpleGA(genome)
    ga.setGenerations(200000)
    ga.setMinimax(Consts.minimaxType["minimize"])
    ga.setCrossoverRate(1.0)
    ga.setMutationRate(0.02)
    ga.setPopulationSize(80)
+   # ga.setMultiProcessing(True) # does not work, throws error
 
    # This is to make a video
-   ga.stepCallback.set(evolve_callback)
-   # 21666.49
+   ga.stepCallback.set(evolve_callback) # not nessessary, use for TESTING
 
    ga.evolve(freq_stats=500)
    best = ga.bestIndividual()
 
-   graph(coords)
-   print(best)
+   write_tour_to_img(coords, best, "tsp_result.png")
 
-   # if PIL_SUPPORT:
-   #    write_tour_to_img(coords, best, "tsp_result.png")
-   # else:
-   #    print "No PIL detected, cannot plot the graph !"
 
 if __name__ == "__main__":
     main(sys.argv)
