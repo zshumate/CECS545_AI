@@ -9,18 +9,12 @@ from pyevolve import GSimpleGA
 from pyevolve import Mutators
 from pyevolve import Crossovers
 from pyevolve import Consts
+from pyevolve import DBAdapters
 
 import matplotlib.pyplot as plt
 import sys, random
 from math import sqrt
 
-PIL_SUPPORT = None
-
-try:
-   from PIL import Image, ImageDraw, ImageFont
-   PIL_SUPPORT = True
-except:
-   PIL_SUPPORT = False
 
 coords = []
 LAST_SCORE = -1
@@ -121,14 +115,16 @@ def main(argv):
    genome = G1DList.G1DList(len(coords))
 
    genome.evaluator.set(lambda chromosome: tour_length(cm, chromosome, len(cities)))
-   genome.crossover.set(Crossovers.G1DListCrossoverEdge)
+   genome.crossover.set(Crossovers.G1DListCrossoverEdge)        # choices are G1DListCrossoverEdge (A) or G1DListCrossoverCutCrossfill (B)
    genome.initializator.set(G1DListTSPInitializator)
 
    ga = GSimpleGA.GSimpleGA(genome)
+   sqlite_adapter = DBAdapters.DBSQLite(identify="ex1")
+   ga.setDBAdapter(sqlite_adapter)
    ga.setGenerations(200000)
    ga.setMinimax(Consts.minimaxType["minimize"])
    ga.setCrossoverRate(1.0)
-   ga.setMutationRate(0.02)
+   ga.setMutationRate(0.02)                                             # choises are 0.02 (1) or 0.002 (2)
    ga.setPopulationSize(80)
    # ga.setMultiProcessing(True) # does not work, throws error
 
@@ -139,6 +135,7 @@ def main(argv):
    best = ga.bestIndividual()
 
    write_tour_to_img(coords, best, "tsp_result.png")
+   print(best)
 
 
 if __name__ == "__main__":
