@@ -42,16 +42,6 @@ def tour_length(matrix, tour, num):
 def write_tour_to_img(coords, tour, img_file):
    """ The function to plot the graph """
    x, y = [], []
-   # padding=20
-   # coords=[(x+padding,y+padding) for (x,y) in coords]
-   # maxx,maxy=0,0
-   # for x,y in coords:
-   #    maxx, maxy = max(x,maxx), max(y,maxy)
-   # maxx+=padding
-   # maxy+=padding
-   # img = Image.new("RGB",(int(maxx),int(maxy)),color=(255,255,255))
-   # font=ImageFont.load_default()
-   # d=ImageDraw.Draw(img);
    num_cities = len(tour)
    for i in range(num_cities):
       city_i = tour[i]
@@ -66,14 +56,6 @@ def write_tour_to_img(coords, tour, img_file):
    plt.clf()
    plt.plot(x,y)
    plt.savefig(img_file)
-    #   d.line((int(x1),int(y1),int(x2),int(y2)),fill=(0,0,0))
-    #   d.text((int(x1)+7,int(y1)-5),str(i),font=font,fill=(32,32,32))
-
-   # for x,y in coords:
-   #    x,y=int(x),int(y)
-   #    d.ellipse((x-5,y-5,x+5,y+5),outline=(0,0,0),fill=(196,196,196))
-   # del d
-   # img.save(img_file, "PNG")
    print "The plot was saved into the %s file." % (img_file,)
 
 def G1DListTSPInitializator(genome, **args):
@@ -82,18 +64,12 @@ def G1DListTSPInitializator(genome, **args):
    random.shuffle(lst)
    genome.setInternalList(lst)
 
-# This is to make a video of best individuals along the evolution
-# Use mencoder to create a video with the file list list.txt
-# mencoder mf://@list.txt -mf w=400:h=200:fps=3:type=png -ovc lavc
-#          -lavcopts vcodec=mpeg4:mbd=2:trell -oac copy -o output.avi
-#
 def evolve_callback(ga_engine):
    global LAST_SCORE
    if ga_engine.getCurrentGeneration() % 100 == 0:
       best = ga_engine.bestIndividual()
       if LAST_SCORE != best.getRawScore():
          write_tour_to_img( coords, best, "tspimg/tsp_result_%d.png" % ga_engine.getCurrentGeneration())
-        #  graph(best, "tspimg/tsp_result_%d.png" % ga_engine.getCurrentGeneration())
          LAST_SCORE = best.getRawScore()
    return False
 
@@ -102,6 +78,7 @@ def main(argv):
    cm     = []
    cities = []
 
+   # read cities from file given as a argument into a list of dictionaries
    with open(argv[1]) as f:
        for i in xrange(7):
            f.next()
@@ -109,30 +86,32 @@ def main(argv):
            words = line.split(" ")
            cities.append({"num":words[0],"x":words[1],"y":words[2].strip()})
 
+   # put coordinates into a form best suited for the funtion to parse
    coords = [(float(c['x']), float(c['y']))
                  for c in cities]
    cm     = cartesian_matrix(coords)
    genome = G1DList.G1DList(len(coords))
 
+   # initialize evaluation function and crossover function
    genome.evaluator.set(lambda chromosome: tour_length(cm, chromosome, len(cities)))
    genome.crossover.set(Crossovers.G1DListCrossoverEdge)        # choices are G1DListCrossoverEdge (A) or G1DListCrossoverCutCrossfill (B)
    genome.initializator.set(G1DListTSPInitializator)
 
    ga = GSimpleGA.GSimpleGA(genome)
+   # set up database to generate improvment curve graph after genetic algorithm
    sqlite_adapter = DBAdapters.DBSQLite(identify="ex1")
    ga.setDBAdapter(sqlite_adapter)
+   # initialized genetic algorithm variables (generations, crossover rate, mutation rate, and population size)
    ga.setGenerations(200000)
    ga.setMinimax(Consts.minimaxType["minimize"])
    ga.setCrossoverRate(1.0)
-   ga.setMutationRate(0.002)                                             # choises are 0.02 (1) or 0.002 (2)
+   ga.setMutationRate(0.002)                                    # choises are 0.02 (1) or 0.002 (2)
    ga.setPopulationSize(80)
-   # ga.setMultiProcessing(True) # does not work, throws error
-
-   # ga.stepCallback.set(evolve_callback) # not nessessary, use for TESTING
 
    ga.evolve(freq_stats=500)
    best = ga.bestIndividual()
 
+   # graph and print the best route
    write_tour_to_img(coords, best, "tsp_result.png")
    print(best)
 
