@@ -124,12 +124,11 @@ def main(argv):
    ga.setGenerations(200000)
    ga.setMinimax(Consts.minimaxType["minimize"])
    ga.setCrossoverRate(1.0)
-   ga.setMutationRate(0.02)                                             # choises are 0.02 (1) or 0.002 (2)
+   ga.setMutationRate(0.002)                                             # choises are 0.02 (1) or 0.002 (2)
    ga.setPopulationSize(80)
    # ga.setMultiProcessing(True) # does not work, throws error
 
-   # This is to make a video
-   ga.stepCallback.set(evolve_callback) # not nessessary, use for TESTING
+   # ga.stepCallback.set(evolve_callback) # not nessessary, use for TESTING
 
    ga.evolve(freq_stats=500)
    best = ga.bestIndividual()
