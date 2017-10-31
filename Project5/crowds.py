@@ -11,14 +11,35 @@ from pyevolve import Crossovers
 from pyevolve import Consts
 from pyevolve import DBAdapters
 
+import math
 import matplotlib.pyplot as plt
-import sys, random
+import sys, random, time
 from math import sqrt
 
 
 coords = []
 LAST_SCORE = -1
 
+
+def woc_score(coords, tour):
+    cities = []
+    num_cities = len(tour)
+    for i in range(num_cities):
+       city_i = tour[i]
+       a, b = coords[city_i]
+       cities.append({"x":a,"y":b})
+    city_0 = tour[0]
+    a, b = coords[city_0]
+    cities.append({"x":a,"y":b})
+
+    distance = 0
+    for i in xrange(len(cities)-1):
+        distance += getDistance(cities[i]['x'], cities[i]['y'], cities[i+1]['x'], cities[i+1]['y'], )
+    return distance
+
+# Find the distance between two points
+def getDistance(x1, y1, x2, y2):
+    return math.sqrt(pow(float(x1) - float(x2), 2) + pow(float(y1) - float(y2), 2))
 
 def cartesian_matrix(coords):
    """ A distance matrix """
@@ -74,10 +95,13 @@ def evolve_callback(ga_engine):
    return False
 
 def main(argv):
+   start = time.time()
    global coords
    cm     = []
    cities = []
    crowd = []
+   finalRoute = []
+   current = 0
 
    # read cities from file given as a argument into a list of dictionaries
    with open(argv[1]) as f:
@@ -103,7 +127,7 @@ def main(argv):
    sqlite_adapter = DBAdapters.DBSQLite(identify="ex1")
    ga.setDBAdapter(sqlite_adapter)
    # initialized genetic algorithm variables (generations, crossover rate, mutation rate, and population size)
-   ga.setGenerations(5000)
+   ga.setGenerations(10000)
    ga.setMinimax(Consts.minimaxType["minimize"])
    ga.setCrossoverRate(1.0)
    ga.setMutationRate(0.002)                                    # choises are 0.02 (1) or 0.002 (2)
@@ -125,21 +149,36 @@ def main(argv):
        crowd.append(nestedList)
 
    # populate matrix with occuences of specific edges
-   for i in xrange(10):
+   for i in xrange(20):
        for j in xrange(len(cities)):
            if j+1 == len(cities):
-               crowd[pop[i][j]][pop[i][0]] += 1
+               minimum = min(pop[i][j], pop[i][0])
+               maximum = max(pop[i][j], pop[i][0])
+               crowd[minimum][maximum] += 1
            else:
-               crowd[pop[i][j]][pop[i][j+1]] += 1
+               minimum = min(pop[i][j], pop[i][j+1])
+               maximum = max(pop[i][j], pop[i][j+1])
+               crowd[minimum][maximum] += 1
 
    # find best path from wisdom of crowds
-   for i in xrange(len(cities)):
-       x, y, wisdom = 0, 0, 0
-       for j in xrange(len(cities)):
-           if crowd[i][j] > wisdom:
-               wisdom = crowd[i][j]
-               x, y = i, j
+   finalRoute.append(0)
+   while(len(finalRoute) < len(cities)):
+       x, wisdom = 0, 0
+       for i in xrange(len(cities)):
+           minimum = min(current, i)
+           maximum = max(current, i)
+           if crowd[minimum][maximum] > wisdom and i not in finalRoute:
+               wisdom = crowd[minimum][maximum]
+               x = i
+       current = x
+       finalRoute.append(current)
 
+   print finalRoute
+   print 'woc Score: %s' % woc_score(coords, finalRoute)
+   write_tour_to_img(coords, finalRoute, "woc_result.png")
+
+   # print time for script to run
+   print '\nThis script took ', time.time()-start, ' seconds.'
 
 
 if __name__ == "__main__":
