@@ -12,7 +12,9 @@ import numpy as np
 
 
 #constants
-
+variables = []
+clauses = []
+count = 0
 
 
 #options for running solver
@@ -21,26 +23,40 @@ class GASATOptions():
         self.parser = argparse.ArgumentParser()
 
         self.parser.add_argument('--data_path', required=True, help="data file containing problem to satisfy")
+        self.parser.add_argument('--visualize_results', type=int, default=1, help="whether to visualize results")
 
     def parse_args(self):
         return self.parser.parse_args()
 
 
-#loads given data file and initializes a graph containing the appropriate nodes
-def initialize_graph(data_path):
-    graph = TSPGraph()
-
-    f = open("./%s" % data_path)
-    lines = f.readlines()[DATA_OFFSET:]
-    f.close()
-
-    for line in lines:
-        x, y = line.strip().split()[COORDINATES_OFFSET:]
-        graph.add_vertex(x, y)
-
-    graph.add_edges()
-
-    return graph
+#reads in data from a provided file
+def read_file(data_path):
+    f = open("%s" % data_path)
+    with open('./%s' % data_path) as f:
+        for line in f:
+            words = line.strip('\n').split(' ')
+            if words[0] == 'c':
+                continue
+            elif words[0] == 'p':
+                variableCount = int(words[2])
+                clauseCount = int(words[4])
+                for i in xrange(variableCount):
+                    variables.append(False)
+                for i in xrange(clauseCount):
+                    clauses.append('')
+            else:
+                for x in words:
+                    if x == '0' or x == '%':
+                        break
+                    elif x == '':
+                        continue
+                    else:
+                        if int(x) > 0:
+                            x = str(int(x) - 1)
+                        else:
+                            x = str(int(x) + 1)
+                        clauses[count] += (x + ' ')
+                count += 1
 
 #initializes population according to some strategy
 def initialize_population():
