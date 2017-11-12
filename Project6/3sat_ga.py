@@ -191,9 +191,26 @@ def mutate(child, mutation_prob, mutation_strategy):
 
 #combine population solutions via Wisdom of Crowds and find its weight
 def combine_via_woc(population, woc_strategy):
+    agree, disagree, wisdom = [], [], []
+    for i in range(VAR_COUNT_OFFSET):
+        agree.append(0)
+        disagree.append(0)
     if woc_strategy == "weighted":
-        
-    else
+        for p in population:
+            for i in range(len(p))
+                if p[i] == 1:
+                    agree[i] += 1;
+                else:
+                    disagree[i] += 1;
+        for i in range(len(agree)):
+            if agree[i] >= (len(population)*.9):
+                wisdom[i] = 1
+            elif disagree[i] >= (len(population)*.9):
+                wisdom[i] = 0
+        for i in range(len(wisdom)):
+            
+    else:
+        raise NotImplementedError("Invalid choice of wisdom of crowds strategy!")
 
 #find the best individual and its cost in the current generation
 def get_best_child(solver, children):
