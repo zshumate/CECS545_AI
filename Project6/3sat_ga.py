@@ -30,6 +30,7 @@ class GASATOptions():
         self.parser.add_argument('--crossover_strategy', default="random", help="crossover strategy for GA")
         self.parser.add_argument('--mutation_strategy', default="point", help="mutation strategy for GA")
         self.parser.add_argument('--mutation_prob', type=float, default=.2, help="mutation probability")
+        self.parser.add_argument('--woc_strategy', default="basic", help="wisdom of crowds strategy for GA")
         self.parser.add_argument('--generations_limit', type=int, default=500, help="number of generations to continue w/o improvement")
         self.parser.add_argument('--improvement_limit', type=int, default=1, help="min number of constraints to satisfy to continue training")
         self.parser.add_argument('--visualize_results', type=int, default=1, help="whether to visualize results")
@@ -178,7 +179,7 @@ def mutate(child, mutation_prob, mutation_strategy):
             rand_idx = np.random.randint(len(child))
             child[rand_idx] = 0 if child[rand_idx] == 1 else 1
 	elif mutation_strategy == "pairswap":
-	    randomNumber = np.random.randint(len(child))
+	    randomNumber = np.random.randint(5)
 	    while randomNumber != 0:
 		switch1 = np.random.randint(len(child))
 		switch2 = np.random.randint(len(child))
@@ -191,26 +192,34 @@ def mutate(child, mutation_prob, mutation_strategy):
 
 #combine population solutions via Wisdom of Crowds and find its weight
 def combine_via_woc(population, woc_strategy):
-    agree, disagree, wisdom = [], [], []
-    for i in range(VAR_COUNT_OFFSET):
-        agree.append(0)
-        disagree.append(0)
-    if woc_strategy == "weighted":
-        for p in population:
-            for i in range(len(p))
-                if p[i] == 1:
-                    agree[i] += 1;
-                else:
-                    disagree[i] += 1;
-        for i in range(len(agree)):
-            if agree[i] >= (len(population)*.9):
+    agreement, wisdom = [], []
+    for i in range(len(population[0])):
+        agreement.append(0)
+        wisdom.append(0)
+    for p in population:
+        for i in range(len(p)):
+            if p[i] == 1:
+                agreement[i] += 1;
+            else:
+                agreement[i] -= 1;
+    if woc_strategy == "basic":
+        for i in range(len(agreement)):
+            if agreement[i] >= 0:
                 wisdom[i] = 1
-            elif disagree[i] >= (len(population)*.9):
+            elif agreement[i] <= 0:
                 wisdom[i] = 0
-        for i in range(len(wisdom)):
-            
+    # elif woc_strategy == "weighted":      # NOT finished
+    #     for i in range(len(agreement)):
+    #         if agreement[i] >= (len(population)*.8):
+    #             wisdom[i] = 1
+    #         elif agreement[i] <= (len(population)*(-.8)):
+    #             wisdom[i] = 0
+    #     for i in range(len(wisdom)):
+    #
     else:
         raise NotImplementedError("Invalid choice of wisdom of crowds strategy!")
+
+    return wisdom
 
 #find the best individual and its cost in the current generation
 def get_best_child(solver, children):
@@ -275,12 +284,18 @@ def ga_solve(solver, args):
         # combined_solution_costs.append((generation_count, num_clauses-combined_soln_cost))
         best_child_costs.append((generation_count, num_clauses-best_child_cost))
 
+        woc_solution = combine_via_woc(population, args.woc_strategy)
+        woc_cost = solver.test_solution(woc_solution)
+
         print "Overall Best Solution: %s" % best_solution
         print "Overall Best Solution Cost: %g" % (num_clauses-best_cost)
         # print "Generation %d Combined Solution: %s" % (generation_count, combined_soln)
         # print "Generation %d Combined Solution Cost: %g" % (generation_count, num_clauses-combined_soln_cost)
         print "Generation %d Best Child: %s" % (generation_count, best_child)
-        print "Generation %d Best Child Cost: %g\n" % (generation_count, num_clauses-best_child_cost)
+        print "Generation %d Best Child Cost: %g" % (generation_count, num_clauses-best_child_cost)
+
+        print "Wisdom of Crowds Solution: %s" % woc_solution
+        print "Wisdom of Crowds Solution Cost: %s\n" % (num_clauses-woc_cost)
 
         if num_clauses-best_cost == 0:
             print "* 3SAT INSTANCE SOLVED *\n"
