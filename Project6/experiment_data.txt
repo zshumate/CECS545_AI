@@ -1,0 +1,151 @@
+20 91 Random
+Overall Best GA Number of Unsatified Constraints: 2
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 2
+Generation 503 Average GA Child Number of Unsatified Constraints: 2.28
+Execution Time: 8.74327 seconds
+
+Overall Best GA Number of Unsatified Constraints: 0
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 1
+Generation 131 Average GA Child Number of Unsatified Constraints: 1.36
+Execution Time: 2.23124 seconds
+
+Overall Best GA Number of Unsatified Constraints: 0
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 2
+Generation 18 Average GA Child Number of Unsatified Constraints: 3.81
+Execution Time: 0.298742 seconds
+
+
+20 91 Standard
+Overall Best GA Number of Unsatified Constraints: 0
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 1
+Generation 10 Average GA Child Number of Unsatified Constraints: 1.78
+Execution Time: 0.305234 seconds
+
+Overall Best GA Number of Unsatified Constraints: 0
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 1
+Generation 13 Average GA Child Number of Unsatified Constraints: 1.43
+Execution Time: 0.390742 seconds
+
+Overall Best GA Number of Unsatified Constraints: 0
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 1
+Generation 26 Average GA Child Number of Unsatified Constraints: 1.35
+Execution Time: 0.777324 seconds
+
+
+20 91 Greedy
+Overall Best GA Number of Unsatified Constraints: 2
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 4
+Generation 501 Average GA Child Number of Unsatified Constraints: 4.01
+Execution Time: 9.05549 seconds
+
+Overall Best GA Number of Unsatified Constraints: 2
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 4
+Generation 501 Average GA Child Number of Unsatified Constraints: 4.13
+Execution Time: 9.10456 seconds
+
+Overall Best GA Number of Unsatified Constraints: 2
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 4
+Generation 501 Average GA Child Number of Unsatified Constraints: 4.11
+Execution Time: 9.0708 seconds
+
+
+125 538 Random
+Overall Best GA Number of Unsatified Constraints: 4
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 4
+Generation 702 Average GA Child Number of Unsatified Constraints: 4.83
+Execution Time: 71.9822 seconds
+
+Overall Best GA Number of Unsatified Constraints: 6
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 6
+Generation 1072 Average GA Child Number of Unsatified Constraints: 6.7
+Execution Time: 110.476 seconds
+
+Overall Best GA Number of Unsatified Constraints: 5
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 5
+Generation 694 Average GA Child Number of Unsatified Constraints: 5.81
+Execution Time: 72.2201 seconds
+
+
+125 538 Standard
+Overall Best GA Number of Unsatified Constraints: 5
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 5
+Generation 683 Average GA Child Number of Unsatified Constraints: 5.41
+Execution Time: 133.722 seconds
+
+Overall Best GA Number of Unsatified Constraints: 6
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 6
+Generation 722 Average GA Child Number of Unsatified Constraints: 6.27
+Execution Time: 142.468 seconds
+
+Overall Best GA Number of Unsatified Constraints: 2
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 2
+Generation 1476 Average GA Child Number of Unsatified Constraints: 2.45
+Execution Time: 288.22 seconds
+
+
+125 538 Greedy
+Overall Best GA Number of Unsatified Constraints: 24
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 26
+Generation 509 Average GA Child Number of Unsatified Constraints: 26.3
+Execution Time: 58.3732 seconds
+
+Overall Best GA Number of Unsatified Constraints: 24
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 26
+Generation 510 Average GA Child Number of Unsatified Constraints: 26.06
+Execution Time: 59.9201 seconds
+
+Overall Best GA Number of Unsatified Constraints: 24
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 26
+Generation 502 Average GA Child Number of Unsatified Constraints: 26.18
+Execution Time: 61.621 seconds
+
+
+250 1065 Random
+Overall Best GA Number of Unsatified Constraints: 9
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 9
+Generation 1035 Average GA Child Number of Unsatified Constraints: 9.58
+Execution Time: 202.147 seconds
+
+Overall Best GA Number of Unsatified Constraints: 5
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 6
+Generation 817 Average GA Child Number of Unsatified Constraints: 6.53
+Execution Time: 160.331 seconds
+
+Overall Best GA Number of Unsatified Constraints: 11
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 11
+Generation 642 Average GA Child Number of Unsatified Constraints: 11.55
+Execution Time: 121.246 seconds
+
+
+250 1065 Standard
+Overall Best GA Number of Unsatified Constraints: 9
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 9
+Generation 921 Average GA Child Number of Unsatified Constraints: 9.38
+Execution Time: 332.62 seconds
+
+Overall Best GA Number of Unsatified Constraints: 11
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 11
+Generation 976 Average GA Child Number of Unsatified Constraints: 11.23
+Execution Time: 338.913 seconds
+
+Overall Best GA Number of Unsatified Constraints: 7
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 7
+Generation 1837 Average GA Child Number of Unsatified Constraints: 7.33
+Execution Time: 646.649 seconds
+
+
+250 1065 Greedy
+Overall Best GA Number of Unsatified Constraints: 44
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 47
+Generation 609 Average GA Child Number of Unsatified Constraints: 47.11
+Execution Time: 129.256 seconds
+
+Overall Best GA Number of Unsatified Constraints: 44
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 47
+Generation 1023 Average GA Child Number of Unsatified Constraints: 47.15
+Execution Time: 227.399 seconds
+
+Overall Best GA Number of Unsatified Constraints: 44
+Overall Best Wisdom of Crowds Number of Unsatified Constraints: 47
+Generation 854 Average GA Child Number of Unsatified Constraints: 47.11
+Execution Time: 203.203 seconds

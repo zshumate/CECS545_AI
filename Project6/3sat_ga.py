@@ -178,48 +178,46 @@ def mutate(child, mutation_prob, mutation_strategy):
         if mutation_strategy == "point":
             rand_idx = np.random.randint(len(child))
             child[rand_idx] = 0 if child[rand_idx] == 1 else 1
-	elif mutation_strategy == "pairswap":
-	    randomNumber = np.random.randint(5)
-	    while randomNumber != 0:
-		switch1 = np.random.randint(len(child))
-		switch2 = np.random.randint(len(child))
-		child[switch1], child[switch2] = child[switch2], child[switch1]
-		randomNumber -= 1
+        elif mutation_strategy == "pairswap":
+            randomNumber = np.random.randint(5)
+
+            while randomNumber != 0:
+                switch1 = np.random.randint(len(child))
+                switch2 = np.random.randint(len(child))
+                child[switch1], child[switch2] = child[switch2], child[switch1]
+                randomNumber -= 1
         else:
             raise NotImplementedError("Invalid choice of mutation strategy!")
 
     return child
 
 #combine population solutions via Wisdom of Crowds and find its weight
-def combine_via_woc(population, woc_strategy):
+def combine_via_woc(solver, population, woc_strategy):
     agreement, wisdom = [], []
+
     for i in range(len(population[0])):
         agreement.append(0)
         wisdom.append(0)
+
     for p in population:
         for i in range(len(p)):
             if p[i] == 1:
                 agreement[i] += 1;
             else:
                 agreement[i] -= 1;
+
     if woc_strategy == "basic":
         for i in range(len(agreement)):
             if agreement[i] >= 0:
                 wisdom[i] = 1
             elif agreement[i] <= 0:
                 wisdom[i] = 0
-    # elif woc_strategy == "weighted":      # NOT finished
-    #     for i in range(len(agreement)):
-    #         if agreement[i] >= (len(population)*.8):
-    #             wisdom[i] = 1
-    #         elif agreement[i] <= (len(population)*(-.8)):
-    #             wisdom[i] = 0
-    #     for i in range(len(wisdom)):
+    # elif woc_strategy == "weighted":
     #
     else:
         raise NotImplementedError("Invalid choice of wisdom of crowds strategy!")
 
-    return wisdom
+    return wisdom, solver.test_solution(wisdom)
 
 #find the best individual and its cost in the current generation
 def get_best_child(solver, children):
@@ -232,20 +230,26 @@ def get_best_child(solver, children):
 
     return best_individual_cost
 
-#visualize GA results
-def visualize_generation_costs(num_variables, num_clauses, best_child_costs, save_results):
-    generations, child_costs = [], []
+def get_avg_child_cost(solver, children):
+    return sum([solver.test_solution(child) for child in children]) / float(len(children))
 
-    # for generation_data in combined_solution_costs:
-    #     generations.append(generation_data[0])
-    #     combined_costs.append(generation_data[1])
+#visualize GA results
+def visualize_generation_costs(num_variables, num_clauses, combined_costs, best_child_costs, average_child_costs, save_results):
+    generations, woc_costs, child_costs, avg_costs = [], [], [], []
+
+    for generation_data in combined_costs:
+        generations.append(generation_data[0])
+        woc_costs.append(generation_data[1])
 
     for generation_data in best_child_costs:
-        generations.append(generation_data[0])
         child_costs.append(generation_data[1])
 
-    # plt.plot(generations, combined_costs, label="Combined Solution Costs", color="navy")
-    plt.plot(generations, child_costs, label="Best Child Costs", color="darkorange")
+    for generation_data in  average_child_costs:
+        avg_costs.append(generation_data[1])
+
+    plt.plot(generations, woc_costs, label="WOC Solution Costs", color="navy")
+    plt.plot(generations, child_costs, label="Best GA Solution Costs", color="darkorange")
+    plt.plot(generations, avg_costs, label="Avg GA Solution Costs", color="firebrick")
     plt.xlabel("Generation")
     plt.ylabel("Number of Unsatified Constraints")
     plt.title("Generation vs. Cost (%d, %d)" % (num_variables, num_clauses))
@@ -262,15 +266,16 @@ def ga_solve(solver, args):
     start_time = time.time()
     population = initialize_population(solver, args.population_size, args.initialization_strategy)
     generation_count, no_improvement_count = 0, 0
-    best_cost, best_solution, num_clauses = 0, None, solver.get_num_clauses()
-    combined_solution_costs, best_child_costs = [], []
+    best_cost, best_solution, best_woc_cost, best_woc_solution, num_clauses = 0, None, 0, None, solver.get_num_clauses()
+    combined_solution_costs, best_child_costs, average_child_costs = [], [], []
 
     while no_improvement_count < args.generations_limit:
         parents_to_mate = select_mating_pairs(solver, population, args.number_of_bins, args.selection_strategy)
         children = [crossover(solver, parents, args.crossover_strategy) for parents in parents_to_mate]
         children = [mutate(child, args.mutation_prob, args.mutation_strategy) for child in children]
-        # combined_soln, combined_soln_cost = combine_via_woc()
+        combined_soln, combined_soln_cost = combine_via_woc(solver, children, args.woc_strategy)
         best_child, best_child_cost = get_best_child(solver, children)
+        average_child_cost = get_avg_child_cost(solver, children)
         population = children
 
         if best_child_cost >= (args.improvement_limit + best_cost):
@@ -280,31 +285,34 @@ def ga_solve(solver, args):
         else:
             no_improvement_count += 1
 
+        if combined_soln_cost >= best_woc_cost:
+            best_woc_solution = combined_soln
+            best_woc_cost = combined_soln_cost
+
         generation_count += 1
-        # combined_solution_costs.append((generation_count, num_clauses-combined_soln_cost))
+        combined_solution_costs.append((generation_count, num_clauses-combined_soln_cost))
         best_child_costs.append((generation_count, num_clauses-best_child_cost))
+        average_child_costs.append((generation_count, num_clauses-average_child_cost))
 
-        woc_solution = combine_via_woc(population, args.woc_strategy)
-        woc_cost = solver.test_solution(woc_solution)
-
-        print "Overall Best Solution: %s" % best_solution
-        print "Overall Best Solution Cost: %g" % (num_clauses-best_cost)
-        # print "Generation %d Combined Solution: %s" % (generation_count, combined_soln)
-        # print "Generation %d Combined Solution Cost: %g" % (generation_count, num_clauses-combined_soln_cost)
-        print "Generation %d Best Child: %s" % (generation_count, best_child)
-        print "Generation %d Best Child Cost: %g" % (generation_count, num_clauses-best_child_cost)
-
-        print "Wisdom of Crowds Solution: %s" % woc_solution
-        print "Wisdom of Crowds Solution Cost: %s\n" % (num_clauses-woc_cost)
+        # print "Overall Best GA Solution: %s" % best_solution
+        print "Overall Best GA Number of Unsatified Constraints: %g" % (num_clauses-best_cost)
+        # print "Overall Best Wisdom of Crowds Solution: %s" % best_woc_solution
+        print "Overall Best Wisdom of Crowds Number of Unsatified Constraints: %g" % (num_clauses-best_woc_cost)
+        # print "Generation %d Wisdom of Crowds Solution: %s" % (generation_count, combined_soln)
+        # print "Generation %d Wisdom of Crowds Number of Unsatified Constraints: %g" % (generation_count, num_clauses-combined_soln_cost)
+        # print "Generation %d Best GA Solution: %s" % (generation_count, best_child)
+        # print "Generation %d Best GA Number of Unsatified Constraints: %g" % (generation_count, num_clauses-best_child_cost)
+        print "Generation %d Average GA Child Number of Unsatified Constraints: %g" % (generation_count, num_clauses-average_child_cost)
 
         if num_clauses-best_cost == 0:
-            print "* 3SAT INSTANCE SOLVED *\n"
+            # print "* 3SAT INSTANCE SOLVED *\n"
             break
 
     print "Execution Time: %g seconds" % (time.time() - start_time)
 
     if args.visualize_results:
-        visualize_generation_costs(solver.get_num_variables(), num_clauses, best_child_costs, args.save_results)
+        visualize_generation_costs(solver.get_num_variables(), num_clauses, combined_solution_costs, best_child_costs,
+                                        average_child_costs, args.save_results)
 
 
 if __name__ == "__main__":
